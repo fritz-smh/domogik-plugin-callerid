@@ -1,0 +1,78 @@
+{
+    "products" : [ ],
+    "configuration": [],
+    "xpl_commands": {},   
+    "xpl_stats": {
+       "callerid": {
+            "name": "callerid",
+            "schema": "cid.basic",
+            "parameters": {
+                    "static": [
+                        {
+                            "key": "calltype",
+                            "value": "inbound"
+                        }
+                    ],
+                    "device": [],
+                    "dynamic": [
+                        {
+                             "key": "phone",
+                             "sensor": "callerid",
+			     "ignore_values": ""
+                        }
+                    ]
+                }
+       }
+    },
+    "commands": {},
+    "sensors": {
+	"callerid": {
+		"name": "Caller ID",
+                "data_type": "DT_String",
+                "conversion": "",
+                "incremental": false,
+                "timeout": 0,
+                "history": {
+                    "store": true,
+                    "duplicate": true,
+                    "max": 0,
+                    "expire": 0,
+                    "round_value": 0
+                }
+	}
+    },
+    "device_types": {
+        "callerid.callerid": {
+            "description": "Caller ID", 
+            "id": "callerid.callerid",
+            "name": "Caller ID",
+            "commands": [],
+            "sensors": ["callerid"],
+            "parameters": [
+                {
+                    "key": "device",
+                    "xpl": false,
+                    "description": "The modem address on the server. Example : /dev/ttyUSB0",
+                    "type": "string"
+                }
+            ]
+        }
+    }, 
+    "identity": {
+        "author": "Fritz",
+        "author_email": "fritz.smh at gmail.com,",
+        "tags": ["caller id", "modem", "telephone"],
+        "dependencies": [
+            {   
+                "id": "pyserial (>=2.5)",
+                "type": "python"
+            }
+        ],
+        "description": "Get incoming calls numbers",
+        "domogik_min_version": "0.4.1", 
+        "name": "callerid", 
+        "type": "plugin", 
+        "version": "1.0"
+    }, 
+    "json_version": 2
+}

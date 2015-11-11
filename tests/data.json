@@ -1,0 +1,35 @@
+{
+    "history" : [
+                ],
+    "responses" : {},
+    "loop" : [
+                    { "description" : "RING",
+                      "action" : "data", 
+                      "data" : "RING"
+                    },
+                    { "description" : "DATE",
+                      "action" : "data", 
+                      "data" : "DATE = 2803"
+                    },
+                    { "description" : "TIME",
+                      "action" : "data", 
+                      "data" : "TIME = 1235"
+                    },
+                    { "description" : "NAME",
+                      "action" : "data", 
+                      "data" : "NAME = SMH,FRITZ"
+                    },
+                    { "description" : "NMBR",
+                      "action" : "data", 
+                      "data" : "NMBR = 0102030405"
+                    },
+                    { "description" : "RING",
+                      "action" : "data", 
+                      "data" : "RING"
+                    },
+                    { "description" : "wait",
+                      "action" : "wait", 
+                      "delay" : 5
+                    }
+              ]
+}
