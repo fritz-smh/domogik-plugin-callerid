@@ -1,0 +1,59 @@
+.. _index:
+
+===============
+Plugin callerid
+===============
+
+Purpose
+=======
+
+The callerid plugin detect when an incoming call happens with a home phone. It needs a modem to be used.
+
+Dependencies
+============
+
+* Python dependancy : pyserial (installed with Domogik)
+
+Plug the modem
+==============
+
+.. image :: howtoplug.png
+
+Just plug the modem on a telephony plug and on the server.
+
+Create an udev rule
+===================
+
+You may create a udev rule for this device. You can find sample udev rules in the **udev/** folder of this plugin.
+
+You just need to copy the choosen sample file in the folder **/etc/udev/rules.d/** and unplug/plug the modem.
+
+Plugin configuration
+====================
+
+There is no global configuration option for this plugin.
+
+Create the domogik devices
+==========================
+
+Domogik device type : callerid.callerid
+---------------------------------------
+
+1 parameter is needed for a domogik device creation:
+
+===================== =========================== ======================================================================
+Key                   Type                        Description
+===================== =========================== ======================================================================
+device                string                      The modem device address on the server. Example : /dev/ttyUSB0
+===================== =========================== ======================================================================
+
+Start the plugin
+================
+
+You can now start the plugin (start button) and use the created domogik devices.
+
+Set up your widgets on the user interface
+=========================================
+
+You can now place the widgets of your devices features on the user interface.
+
