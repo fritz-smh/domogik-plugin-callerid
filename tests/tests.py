@@ -104,6 +104,8 @@ if __name__ == "__main__":
             for the_param in params['global']:
                 if the_param['key'] == "device":
                     the_param['value'] = dev
+                if the_param['key'] == "cid_command":
+                    the_param['value'] = "AT#CID=1"
             # xpl params
             pass # there are no xpl params for this plugin
             # create

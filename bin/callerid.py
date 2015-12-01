@@ -69,13 +69,15 @@ class CallerIdManager(XplPlugin):
         for a_device in self.devices:
             try:
                 address = self.get_parameter(a_device, "device")
-                self.log.info(u"Launch thread to listen on device : {0} which address is {1}".format(a_device["name"], address))
-                thr_name = "{0}".format(a_device['name'])
+                cid_command = self.get_parameter(a_device, "cid_command")
+                self.log.info(u"Launch thread to listen on device : {0} which address is '{1}' and cid command is '{2}'".format(a_device["name"], address, cid_command))
+                thr_name = "dev_{0}".format(a_device['id'])
                 threads[thr_name] = threading.Thread(None, 
                                            CallerIdModem,
                                            thr_name,
                                            (self.log,
                                             address, 
+                                            cid_command, 
                                             self.send_xpl,
                                             self.get_stop(),
                                             self.options.test_option),

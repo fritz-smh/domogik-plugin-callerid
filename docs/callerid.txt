@@ -39,13 +39,16 @@ Create the domogik devices
 Domogik device type : callerid.callerid
 ---------------------------------------
 
-1 parameter is needed for a domogik device creation:
+Two parameters are needed for a domogik device creation:
 
 ===================== =========================== ======================================================================
 Key                   Type                        Description
 ===================== =========================== ======================================================================
 device                string                      The modem device address on the server. Example : /dev/ttyUSB0
+cid_command           choice                      The AT command to activate caller id feature on the modem
 ===================== =========================== ======================================================================
+
+If your modem is not able to catch the inbound calls numbers, this may be related to the **cid_command**  parameter. The default value should be ok for most of the modem, but you can try the other values if needed. 
 
 Start the plugin
 ================

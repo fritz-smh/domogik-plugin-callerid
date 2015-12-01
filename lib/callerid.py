@@ -64,7 +64,7 @@ class CallerIdModem:
     """ Look for incoming calls with a modem
     """
 
-    def __init__(self, log, device, callback, stop, fake_device = None):
+    def __init__(self, log, device, cid_command, callback, stop, fake_device = None):
         """ Create handler
         @param device : The full path or number of the device where 
                              modem is connected
@@ -79,7 +79,7 @@ class CallerIdModem:
         self.fake_device = fake_device
         self.device = device
 
-        self.open()
+        self.open(cid_command)
         self.listen()
 
 

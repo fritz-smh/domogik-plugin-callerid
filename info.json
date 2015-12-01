@@ -54,6 +54,14 @@
                     "xpl": false,
                     "description": "The modem address on the server. Example : /dev/ttyUSB0",
                     "type": "string"
+                },
+                {
+                    "key": "cid_command",
+                    "xpl": false,
+                    "description": "The AT command to activate caller id feature on the modem (if the default one is not working with your modem you can test the others).",
+                    "choices": ["AT#CID=1", "AT+CID=1", "AT+VCID=1"],
+                    "type": "choice",
+                    "default": "AT#CID=1"
                 }
             ]
         }
