@@ -1,6 +1,15 @@
 {
     "products" : [ ],
-    "configuration": [],
+    "configuration": [
+        {
+            "default": "", 
+            "description": "Carddav VCF file url",
+            "key": "vcf_url", 
+            "name": "VCF file",
+            "required": "no", 
+            "type": "string"
+        }
+    ],
     "xpl_commands": {},   
     "xpl_stats": {
        "callerid": {
@@ -18,6 +27,11 @@
                         {
                              "key": "phone",
                              "sensor": "callerid",
+			     "ignore_values": ""
+                        },
+                        {
+                             "key": "cln",
+                             "sensor": "name",
 			     "ignore_values": ""
                         }
                     ]
@@ -39,6 +53,20 @@
                     "expire": 0,
                     "round_value": 0
                 }
+	},
+	"name": {
+		"name": "Name of the caller",
+                "data_type": "DT_String",
+                "conversion": "",
+                "incremental": false,
+                "timeout": 0,
+                "history": {
+                    "store": true,
+                    "duplicate": true,
+                    "max": 0,
+                    "expire": 0,
+                    "round_value": 0
+                }
 	}
     },
     "device_types": {
@@ -47,7 +75,7 @@
             "id": "callerid.callerid",
             "name": "Caller ID",
             "commands": [],
-            "sensors": ["callerid"],
+            "sensors": ["callerid", "name"],
             "parameters": [
                 {
                     "key": "device",
@@ -73,6 +101,10 @@
         "dependencies": [
             {   
                 "id": "pyserial (>=2.5)",
+                "type": "python"
+            },
+            {   
+                "id": "pyvcf (>=0.6.7)",
                 "type": "python"
             }
         ],

@@ -64,10 +64,13 @@ class CallerIdModem:
     """ Look for incoming calls with a modem
     """
 
-    def __init__(self, log, device, cid_command, callback, stop, fake_device = None):
+    def __init__(self, log, device, cid_command, contacts, blacklist, callback, stop, fake_device = None):
         """ Create handler
         @param device : The full path or number of the device where 
                              modem is connected
+        @param cid_command : AT caller id command
+        @param contacts : dict of known numbers (number => reason)
+        @param blacklist : dict of blacklisted numbers (number => reason)
         @param callback : method to call each time all data are collected
         @param fake_device : fake device. If None, this will not be used. Else, the fake serial device library will be used
         """
@@ -78,6 +81,9 @@ class CallerIdModem:
         # fake or real device
         self.fake_device = fake_device
         self.device = device
+
+        self.contacts = contacts
+        self.blacklist = blacklist
 
         self.open(cid_command)
         self.listen()
@@ -92,19 +98,19 @@ class CallerIdModem:
             #self._ser = serial.Serial(device, 19200, 
             #                          timeout=1)
             if self.fake_device != None:
-                self._log.info(u"Try to open fake Modem : %s" % self.fake_device)
+                self._log.info(u"Try to open fake Modem : {0}".format(self.fake_device))
                 self._ser = testserial.Serial(self.fake_device, baudrate = 19200, timeout = 1)
                 used_device = self.fake_device
             else:
-                self._log.info(u"Try to open Modem : %s" % self.device)
+                self._log.info(u"Try to open Modem : {0}".format(self.device))
                 self._ser = serial.Serial(self.device, baudrate = 19200, timeout = 1)
                 used_device = self.device
             self._log.info("Modem opened")
             # Configure caller id mode
-            self._log.info("Set modem to caller id mode : %s" % cid_command)
-            self._ser.write("%s\r\n" % cid_command)
+            self._log.info("Set modem to caller id mode : {0}".format(cid_command))
+            self._ser.write("{0}\r\n".format(cid_command))
         except:
-            error = "Error while opening modem device : %s : %s" % (used_device, str(traceback.format_exc()))
+            error = "Error while opening modem device : {0} : {1}".format(used_device, str(traceback.format_exc()))
             raise CallerIdModemException(error)
 
     def close(self):
@@ -122,9 +128,9 @@ class CallerIdModem:
         """
         self._log.info("Start listening modem")
         while not self._stop.isSet():
-            resp = self.read()
-            if resp != None:
-                self._cb("inbound", resp)
+            num, name = self.read()
+            if num != None:
+                self._cb("inbound", num, name)
 
 
 
@@ -133,12 +139,20 @@ class CallerIdModem:
         """
         resp = self._ser.readline()
         if NUM_START_LINE in resp:
+            name = u"???"
             # we get the third string's item (separator : blank)
             num = re.sub(NUM_PATTERN, "", resp).strip()
-            self._log.debug("Incoming call from '%s'" % num)
-            return num
+            self._log.debug("Incoming call from {0}".format(num))
+            if num in self.contacts:
+                name = self.contacts[num]
+            if num in self.blacklist:
+                self._log.info("BLACKLISTED incoming call from {0}".format(num))
+                reason = self.blacklist[num]
+                name = u"{0} - blacklisted : {1}".format(name, reason)
+                self._ser.write("ATH\r\n")
+            return num, name
         else:
-            return None
+            return None, None
 
 
     

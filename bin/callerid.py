@@ -42,6 +42,36 @@ from domogik_packages.plugin_callerid.lib.callerid import CallerIdModem, CallerI
 import time
 import threading
 import traceback
+import os
+import csv
+import quopri
+import re
+from urllib2 import urlopen
+try:
+    # python3
+    from urllib.request import urlopen
+except ImportError:
+    # python2
+    from urllib import urlopen
+
+
+
+CONTACTS_FILE = "contacts.csv"
+BLACKLIST_FILE = "blacklist.csv"
+
+
+URL_REGEXP = re.compile(
+        r'^https?://'  # http:// or https://
+        r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+[A-Z]{2,6}\.?|'  # domain...
+        r'localhost|'  # localhost...
+        r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})' # ...or ip
+        r'(?::\d+)?'  # optional port
+        r'(?:/?|[/?]\S+)$', re.IGNORECASE)
+
+# TODO : complete
+INDICATORS = { 
+               "+33" : "0",   # france
+             }
 
 
 class CallerIdManager(XplPlugin):
@@ -62,7 +92,80 @@ class CallerIdManager(XplPlugin):
         self.devices = self.get_device_list(quit_if_no_device = True)
 
         ### get all config keys
-        # n/a
+        url_vcf_file = self.get_config('vcf_url')
+
+        ### First, try to load known phone numbers from a csv file
+        contacts_file = os.path.join(self.get_data_files_directory(), CONTACTS_FILE)
+        self.contacts = {}  # phone number : name
+        try:
+            with open(contacts_file, 'rb') as fp_contacts:
+                data = csv.reader(fp_contacts, delimiter = ';')
+                for a_contact in data:
+                    num = a_contact[1]
+                    for ind in INDICATORS:
+                        if num.startswith(ind):
+                            num = num.replace(ind, INDICATORS[ind])
+                    self.contacts[num] = a_contact[0]
+        except IOError:
+            self.log.info(u"No contact file to open : {0}".format(contacts_file))
+
+
+        ### Then, try to load known phone numbers from a vcf file
+        vcf_file = os.path.join(self.get_data_files_directory(), "test.vcf")
+        if URL_REGEXP.search(url_vcf_file):
+            self.log.info("Valid url file configured for the VCF file : start downloading '{0}' as '{1}'".format(url_vcf_file, vcf_file))
+            try:
+                fp = urlopen(url_vcf_file)
+                with open(vcf_file, 'wb') as download:
+                    download.write(fp.read())
+            except:
+                self.log.error(u"Error while downloading VCF file : '{0}'. Error is : {1}".format(url_vcf_file, traceback.format_exc()))
+        else:
+            self.log.info("No url defined (or not valid url) for the VCF file.")
+        try:
+            BEGIN_VCARD = "BEGIN:VCARD"
+            FN = "FN"
+            TEL = "TEL;"
+            END_VCARD = "END:VCARD"
+            with open(vcf_file, 'r') as vcf:
+                for line in vcf:
+                    if line.startswith(BEGIN_VCARD):
+                        vcf_fn = ""
+                        vcf_num = []
+                    elif line.startswith(FN):
+                        vcf_fn = quopri.decodestring(line.split(":")[1].strip())
+                    elif line.startswith(TEL):
+                        num = line.split(":")[1].strip()
+                        for ind in INDICATORS:
+                            if num.startswith(ind):
+                                num = num.replace(ind, INDICATORS[ind])
+                        vcf_num.append(num)
+                    elif line.startswith(END_VCARD):
+                        for num in vcf_num:
+                            self.contacts[num] = unicode(vcf_fn, "utf-8")
+        except IOError:
+            self.log.info(u"No VCF file to open : {0}".format(vcf_file))
+        except:
+            self.log.info(u"Error while reading VCF file : {0}".format(traceback.format_exc()))
+
+        self.log.info(u"Contacts loaded :")
+        for a_contact in self.contacts:
+            self.log.info(u"- {0} : {1}".format(a_contact, self.contacts[a_contact]))
+
+        ### Finally, load blacklisted numbers
+        blacklist_file = os.path.join(self.get_data_files_directory(), BLACKLIST_FILE)
+        self.blacklist = {}  # phone number : reason
+        try:
+            with open(blacklist_file, 'rb') as fp_blacklist:
+                data = csv.reader(fp_blacklist, delimiter = ';')
+                for a_blacklist in data:
+                    self.blacklist[a_blacklist[1]] = a_blacklist[0]
+        except IOError:
+            self.log.info(u"No blacklist file to open : {0}".format(blacklist_file))
+
+        self.log.info(u"Blacklist loaded :")
+        for a_blacklist in self.blacklist:
+            self.log.info(u"- {0} : {1}".format(a_blacklist, self.blacklist[a_blacklist]))
 
         ### For each device
         threads = {}
@@ -78,6 +181,8 @@ class CallerIdManager(XplPlugin):
                                            (self.log,
                                             address, 
                                             cid_command, 
+                                            self.contacts, 
+                                            self.blacklist, 
                                             self.send_xpl,
                                             self.get_stop(),
                                             self.options.test_option),
@@ -90,16 +195,19 @@ class CallerIdManager(XplPlugin):
         # notify ready
         self.ready()
 
-    def send_xpl(self, calltype, number):
+    def send_xpl(self, calltype, number, name = None):
         """ Send data on xPL network
             @param calltype : inbound/outbound
             @param number : phone number
+            @param name : caller name
         """
         msg = XplMessage()
         msg.set_type("xpl-trig")
         msg.set_schema("cid.basic")
         msg.add_data({"calltype" : calltype})
         msg.add_data({"phone" : number})
+        if name != None:
+            msg.add_data({"cln" : name})
         self.log.debug(u"Send xpl message...")
         self.log.debug(msg)
         self.myxpl.send(msg)
