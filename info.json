@@ -33,6 +33,11 @@
                              "key": "cln",
                              "sensor": "name",
 			     "ignore_values": ""
+                        },
+                        {
+                             "key": "blacklisted",
+                             "sensor": "blacklisted",
+			     "ignore_values": ""
                         }
                     ]
                 }
@@ -50,7 +55,7 @@
                     "store": true,
                     "duplicate": true,
                     "max": 0,
-                    "expire": 0,
+                    "expire": 31,
                     "round_value": 0
                 }
 	},
@@ -64,7 +69,21 @@
                     "store": true,
                     "duplicate": true,
                     "max": 0,
-                    "expire": 0,
+                    "expire": 31,
+                    "round_value": 0
+                }
+	},
+	"blacklisted": {
+		"name": "Blacklisted",
+                "data_type": "DT_Bool",
+                "conversion": "from_no_yes_to_DT_Bool",
+                "incremental": false,
+                "timeout": 0,
+                "history": {
+                    "store": true,
+                    "duplicate": true,
+                    "max": 0,
+                    "expire": 31,
                     "round_value": 0
                 }
 	}
@@ -75,7 +94,7 @@
             "id": "callerid.callerid",
             "name": "Caller ID",
             "commands": [],
-            "sensors": ["callerid", "name"],
+            "sensors": ["callerid", "name", "blacklisted"],
             "parameters": [
                 {
                     "key": "device",

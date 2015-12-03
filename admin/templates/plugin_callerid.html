@@ -1,0 +1,13 @@
+{% extends theme("base/base.html") %}
+{% import theme("base/wtf.html") as wtf %}
+
+{% block content %}
+{% include theme("client_menu.html") %}
+<div class="container">
+<h2>{% trans %}Advanced configuration{% endtrans %}</h2>
+<ul>
+  <li><a href="./{{ clientid }}/contacts">{% trans %}Manage a personal list of contacts{% endtrans %}</a></li>
+  <li><a href="./{{ clientid }}/blacklist">{% trans %}Manage the blacklisted numbers{% endtrans %}</a></li>
+</ul>
+</div>
+{% endblock %}

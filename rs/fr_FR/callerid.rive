@@ -1,0 +1,53 @@
+> object get_last_calls python
+
+    cfg_i18n = {}
+    cfg_i18n['LOCALE'] = "fr_FR.UTF-8"
+    cfg_i18n['ERROR_NO_HISTORY'] = u"Il n'y a eu aucun appel reçu."
+    cfg_i18n['ERROR_LOCALE'] = u"La locale configurée n'est pas bonne ou installée sur le système : {0}".format(cfg_i18n['LOCALE'])
+
+    # returned text
+    cfg_i18n['DISPLAY_FORMAT'] = u"%A %d %B a %H heure %M minutes"
+    cfg_i18n['TXT_LAST_CALL_IS'] = u"Le dernier appel était le {0} de {1}."
+    cfg_i18n['TXT_BLACKLISTED'] = u"L'appel a été filtré."
+
+    from domogik_packages.plugin_callerid.lib.rs_callerid import get_last_calls
+    print("ARGS={0}".format(args))
+    result = get_last_calls(cfg_i18n, args, rs.log)
+    return result
+
+< object
+
+
+
+// ##feature## donner l'historique des appels entrants
+
+/* ##suggest##
+? .*appel.*
+@ quel est le dernier appel
+*/
+
+// device par défaut (souvent pour ce plugin il n'y en aura qu'un)
++ shortcut appels
+- <call>get_last_calls None</call>
+
++ qui a appele en dernier
+@ shortcut appels
+
++ quel est le dernier appel
+@ shortcut appels
+
+// device spécifique (dès fois que...)
++ shortcut appels *
+- <call>get_last_calls <star></call>
+
++ qui a appele en dernier sur [@pronom] *
+@ shortcut appels <star>
+
++ quel est le dernier appel sur [@pronom] *
+@ shortcut appels <star>
+
+
+
+
+
+

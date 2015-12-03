@@ -128,9 +128,9 @@ class CallerIdModem:
         """
         self._log.info("Start listening modem")
         while not self._stop.isSet():
-            num, name = self.read()
+            num, name, blacklisted = self.read()
             if num != None:
-                self._cb("inbound", num, name)
+                self._cb("inbound", num, name, blacklisted)
 
 
 
@@ -139,7 +139,8 @@ class CallerIdModem:
         """
         resp = self._ser.readline()
         if NUM_START_LINE in resp:
-            name = u"???"
+            name = u""
+            blacklisted = False
             # we get the third string's item (separator : blank)
             num = re.sub(NUM_PATTERN, "", resp).strip()
             self._log.debug("Incoming call from {0}".format(num))
@@ -147,12 +148,12 @@ class CallerIdModem:
                 name = self.contacts[num]
             if num in self.blacklist:
                 self._log.info("BLACKLISTED incoming call from {0}".format(num))
+                blacklisted = True
                 reason = self.blacklist[num]
-                name = u"{0} - blacklisted : {1}".format(name, reason)
                 self._ser.write("ATH\r\n")
-            return num, name
+            return num, name, blacklisted
         else:
-            return None, None
+            return None, None, None
 
 
     

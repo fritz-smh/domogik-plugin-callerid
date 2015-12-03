@@ -1,0 +1,18 @@
+{% extends theme("base/base.html") %}
+{% import theme("base/wtf.html") as wtf %}
+
+{% block content %}
+{% include theme("client_menu.html") %}
+<div class="container">
+<h2>{% trans %}Contacts{% endtrans %}</h2>
+<p>{% trans %}If you didn't configure an url to a VCF file (a contact file), or if you want to complete it, you can add here a line per number you want to associate to a name.{% endtrans %}
+<p>{% trans %}The format of each line is : <strong>person identity;number (ex: 0102030405)</strong>.{% endtrans %}
+<form method="POST">
+  <div class="form-group">
+    {{ form.csrf_token }}
+    {{ form.contacts(rows=10, cols=50) }}
+  </div>
+  <button class="btn btn-info" type="submit">{% trans %}Save{% endtrans %}</button>
+</form>
+</div>
+{% endblock %}

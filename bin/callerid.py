@@ -195,7 +195,7 @@ class CallerIdManager(XplPlugin):
         # notify ready
         self.ready()
 
-    def send_xpl(self, calltype, number, name = None):
+    def send_xpl(self, calltype, number, name = None, blacklisted = False):
         """ Send data on xPL network
             @param calltype : inbound/outbound
             @param number : phone number
@@ -208,6 +208,10 @@ class CallerIdManager(XplPlugin):
         msg.add_data({"phone" : number})
         if name != None:
             msg.add_data({"cln" : name})
+        if blacklisted == True:
+            msg.add_data({"blacklisted" : "yes"})
+        elif blacklisted == False:
+            msg.add_data({"blacklisted" : "no"})
         self.log.debug(u"Send xpl message...")
         self.log.debug(msg)
         self.myxpl.send(msg)
