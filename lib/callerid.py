@@ -150,6 +150,7 @@ class CallerIdModem:
                 self._log.info("BLACKLISTED incoming call from {0}".format(num))
                 blacklisted = True
                 reason = self.blacklist[num]
+                self._ser.write("ATA\r\n")
                 self._ser.write("ATH\r\n")
             return num, name, blacklisted
         else:
