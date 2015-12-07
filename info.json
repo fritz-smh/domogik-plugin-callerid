@@ -116,7 +116,7 @@
     "identity": {
         "author": "Fritz",
         "author_email": "fritz.smh at gmail.com,",
-        "tags": ["caller id", "modem", "telephone"],
+        "tags": ["caller id", "modem", "telephone", "butler"],
         "dependencies": [
             {   
                 "id": "pyserial (>=2.5)",
@@ -128,7 +128,7 @@
             }
         ],
         "description": "Get incoming calls numbers",
-        "domogik_min_version": "0.4.1", 
+        "domogik_min_version": "0.5.0", 
         "name": "callerid", 
         "type": "plugin", 
         "version": "1.0"
