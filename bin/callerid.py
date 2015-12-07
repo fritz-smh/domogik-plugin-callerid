@@ -36,11 +36,12 @@ Caller id feature
 """
 
 from domogik.xpl.common.xplmessage import XplMessage
-from domogik.xpl.common.xplconnector import Listener
 from domogik.xpl.common.plugin import XplPlugin
 from domogik_packages.plugin_callerid.lib.callerid import CallerIdModem, CallerIdModemException
+from domogikmq.message import MQMessage
 import time
 import threading
+import thread
 import traceback
 import os
 import csv
@@ -107,7 +108,7 @@ class CallerIdManager(XplPlugin):
                             num = num.replace(ind, INDICATORS[ind])
                     self.contacts[num] = a_contact[0]
         except IOError:
-            self.log.info(u"No contact file to open : {0}".format(contacts_file))
+            self.log.error(u"No contact file to open : {0}".format(contacts_file))
 
 
         ### Then, try to load known phone numbers from a vcf file
@@ -144,38 +145,41 @@ class CallerIdManager(XplPlugin):
                         for num in vcf_num:
                             self.contacts[num] = unicode(vcf_fn, "utf-8")
         except IOError:
-            self.log.info(u"No VCF file to open : {0}".format(vcf_file))
+            self.log.error(u"No VCF file to open : {0}".format(vcf_file))
         except:
-            self.log.info(u"Error while reading VCF file : {0}".format(traceback.format_exc()))
+            self.log.error(u"Error while reading VCF file : {0}".format(traceback.format_exc()))
 
         self.log.info(u"Contacts loaded :")
         for a_contact in self.contacts:
             self.log.info(u"- {0} : {1}".format(a_contact, self.contacts[a_contact]))
 
         ### Finally, load blacklisted numbers
-        blacklist_file = os.path.join(self.get_data_files_directory(), BLACKLIST_FILE)
-        self.blacklist = {}  # phone number : reason
-        try:
-            with open(blacklist_file, 'rb') as fp_blacklist:
-                data = csv.reader(fp_blacklist, delimiter = ';')
-                for a_blacklist in data:
-                    self.blacklist[a_blacklist[1]] = a_blacklist[0]
-        except IOError:
-            self.log.info(u"No blacklist file to open : {0}".format(blacklist_file))
-
-        self.log.info(u"Blacklist loaded :")
-        for a_blacklist in self.blacklist:
-            self.log.info(u"- {0} : {1}".format(a_blacklist, self.blacklist[a_blacklist]))
+        self.load_blacklist()
 
         ### For each device
-        threads = {}
+        self.open_modems()
+
+        # notify ready
+        self.ready()
+
+    def open_modems(self):
+        self.log.info("(Re)starting the threads...")
+        # restart all threads that listen to the modems
+        if not hasattr(self, "stop_to_reload"):
+            self.stop_to_reload = threading.Event()
+        else:
+            self.stop_to_reload.set()
+        self.threads = {}
+        time.sleep(5)
+        self.stop_to_reload.clear()
+        self.threads = {}
         for a_device in self.devices:
             try:
                 address = self.get_parameter(a_device, "device")
                 cid_command = self.get_parameter(a_device, "cid_command")
                 self.log.info(u"Launch thread to listen on device : {0} which address is '{1}' and cid command is '{2}'".format(a_device["name"], address, cid_command))
                 thr_name = "dev_{0}".format(a_device['id'])
-                threads[thr_name] = threading.Thread(None, 
+                self.threads[thr_name] = threading.Thread(None, 
                                            CallerIdModem,
                                            thr_name,
                                            (self.log,
@@ -185,15 +189,73 @@ class CallerIdManager(XplPlugin):
                                             self.blacklist, 
                                             self.send_xpl,
                                             self.get_stop(),
+                                            self.stop_to_reload,
                                             self.options.test_option),
                                            {})
-                threads[thr_name].start()
-                self.register_thread(threads[thr_name])
+                self.threads[thr_name].start()
+                self.register_thread(self.threads[thr_name])
             except:
                 self.log.error(u"{0}".format(traceback.format_exc()))
 
-        # notify ready
-        self.ready()
+
+    def load_blacklist(self):
+        """ Load the blacklist file
+        """
+        self.blacklist_file = os.path.join(self.get_data_files_directory(), BLACKLIST_FILE)
+        self.blacklist = {}  # phone number : reason
+        try:
+            with open(self.blacklist_file, 'rb') as fp_blacklist:
+                data = csv.reader(fp_blacklist, delimiter = ';')
+                for a_blacklist in data:
+                    if len(a_blacklist) > 1:
+                        self.blacklist[a_blacklist[1]] = a_blacklist[0]
+                    else:
+                        self.log.warning("Blacklist file : invalid line : {0}".format(a_blacklist))
+        except IOError:
+            self.log.info(u"No blacklist file to open : {0}".format(self.blacklist_file))
+
+        self.log.info(u"Blacklist loaded :")
+        for a_blacklist in self.blacklist:
+            self.log.info(u"- {0} : {1}".format(a_blacklist, self.blacklist[a_blacklist]))
+
+
+    def on_mdp_request(self, msg):
+        """ Called when a MQ req/rep message is received
+        """
+        XplPlugin.on_mdp_request(self, msg)
+        if msg.get_action() == "client.cmd":
+            print(msg)
+            reason = None
+            status = True
+            data = msg.get_data()
+            if 'blacklist' in data:
+                bl = data['blacklist']
+            else:
+                reason = u"Invalid command : no blacklist key in message"
+                status = False
+
+            if status == True:
+                try:
+                    with open(self.blacklist_file, 'ab') as fp_blacklist:
+                        fp_blacklist.write("\n{0};{1}\n".format("manual blacklisting", bl))
+                except:
+                    reason = u"Error while completing blacklist file : {0}. Error is : {1}".format(self.blacklist_file, traceback.format_exc())
+                    self.log.error(reason)
+                    status = False
+                self.load_blacklist()
+
+
+            self.log.info("Reply to command")
+            reply_msg = MQMessage()
+            reply_msg.set_action('client.cmd.result')
+            reply_msg.add_data('status', status)
+            reply_msg.add_data('reason', reason)
+            self.reply(reply_msg.get())
+
+            if status == True:
+                thread.start_new_thread(self.open_modems, ())
+
+
 
     def send_xpl(self, calltype, number, name = None, blacklisted = False):
         """ Send data on xPL network

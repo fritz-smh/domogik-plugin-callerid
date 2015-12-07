@@ -43,7 +43,19 @@
                 }
        }
     },
-    "commands": {},
+    "commands": {
+        "blacklist" : {
+            "name" : "Blacklist a number",
+            "return_confirmation" : true,
+            "parameters" : [
+                {
+                    "key" : "blacklist",
+                    "data_type" : "DT_String",
+                    "conversion" : ""
+                }
+            ]
+        }
+    },
     "sensors": {
 	"callerid": {
 		"name": "Caller ID",
@@ -93,7 +105,7 @@
             "description": "Caller ID", 
             "id": "callerid.callerid",
             "name": "Caller ID",
-            "commands": [],
+            "commands": ["blacklist"],
             "sensors": ["callerid", "name", "blacklisted"],
             "parameters": [
                 {

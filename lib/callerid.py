@@ -64,7 +64,7 @@ class CallerIdModem:
     """ Look for incoming calls with a modem
     """
 
-    def __init__(self, log, device, cid_command, contacts, blacklist, callback, stop, fake_device = None):
+    def __init__(self, log, device, cid_command, contacts, blacklist, callback, stop, stop2, fake_device = None):
         """ Create handler
         @param device : The full path or number of the device where 
                              modem is connected
@@ -72,11 +72,14 @@ class CallerIdModem:
         @param contacts : dict of known numbers (number => reason)
         @param blacklist : dict of blacklisted numbers (number => reason)
         @param callback : method to call each time all data are collected
+        @param stop : global Domogik stop event
+        @param stop2 : stop event to reload the blacklist
         @param fake_device : fake device. If None, this will not be used. Else, the fake serial device library will be used
         """
         self._log = log
         self._cb = callback 
         self._stop = stop 
+        self._stop2 = stop2
 
         # fake or real device
         self.fake_device = fake_device
@@ -127,7 +130,7 @@ class CallerIdModem:
         """ listen modem for incoming calls
         """
         self._log.info("Start listening modem")
-        while not self._stop.isSet():
+        while not self._stop.isSet() and not self._stop2.isSet():
             num, name, blacklisted = self.read()
             if num != None:
                 self._cb("inbound", num, name, blacklisted)
