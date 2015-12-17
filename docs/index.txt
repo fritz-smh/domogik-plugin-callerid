@@ -7,5 +7,6 @@ Table Of Content
 .. toctree::
 
     /callerid
+    /asterisk
     /dev
     /changelog

@@ -31,7 +31,24 @@ You just need to copy the choosen sample file in the folder **/etc/udev/rules.d/
 Plugin configuration
 ====================
 
-There is no global configuration option for this plugin.
+You can configure the url of an online **CardDAV** file (also called VCF file). These files are contact list files and can be provided by personnal or profesionnal cloud solutions.
+
+===================== =========================== ======================================================================
+Key                   Type                        Description
+===================== =========================== ======================================================================
+vcf_url               url                         The url of a vcf file.
+vcf_cell_label        string                      Label to override the default number type in the VCF file : 'CELL'
+vcf_home_label        string                      Label to override the default number type in the VCF file : 'HOME'
+vcf_work_label        string                      Label to override the default number type in the VCF file : 'WORK'
+===================== =========================== ======================================================================
+
+As a VCF fiel can contains multiple numbers for a contact, if a contact have several phone numbers, the type of number will be added to the contact name. Default number types in a VCF file are not sexy (CELL, WORK, HOME): ::
+
+    FN:John doe
+    TEL;CELL:+33662345678
+    TEL;WORK:+33222345678
+
+You can override these labels with the **vcf_xxxx_label** parameters.
 
 Create the domogik devices
 ==========================
@@ -44,11 +61,37 @@ Two parameters are needed for a domogik device creation:
 ===================== =========================== ======================================================================
 Key                   Type                        Description
 ===================== =========================== ======================================================================
-device                string                      The modem device address on the server. Example : /dev/ttyUSB0
+device                string                      The modem device address on the server. Example : /dev/modem
 cid_command           choice                      The AT command to activate caller id feature on the modem
 ===================== =========================== ======================================================================
 
 If your modem is not able to catch the inbound calls numbers, this may be related to the **cid_command**  parameter. The default value should be ok for most of the modem, but you can try the other values if needed. 
+
+Advanced configuration
+======================
+
+In the advanced configuration pages, you can configure a list of known conttacts and a list of numbers to blacklist.
+
+Known contacts
+--------------
+
+Create a line per phone number. The format is : **name of the contact;phone number**. Example: ::
+
+    John Doe;+33123456789
+    Daddy;+33987654321
+
+Theses contacts are stored in the file **data/contacts.csv** in the plugin folder.
+
+Blacklisted numbers
+-------------------
+
+The plugin is able to take the phone up and down for a list of numbers. For these numbers, your phone should ring only once.
+Create a line per phone number to blacklist. The format is : **reason of the blacklisting;phone number**. Example: ::
+
+    I don't like this person;+33666666666
+    Mother in law;+33555555555
+
+Theses blacklisted numbers are stored in the file **data/blacklist.csv** in the plugin folder.
 
 Start the plugin
 ================

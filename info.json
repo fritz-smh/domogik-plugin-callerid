@@ -8,6 +8,30 @@
             "name": "VCF file",
             "required": "no", 
             "type": "string"
+        },
+        {
+            "default": "mobile", 
+            "description": "Label to override the default number type in VCF file : 'CELL'",
+            "key": "vcf_cell_label", 
+            "name": "Number type 'CELL' label",
+            "required": "no", 
+            "type": "string"
+        },
+        {
+            "default": "home", 
+            "description": "Label to override the default number type in VCF file : 'HOME'",
+            "key": "vcf_home_label", 
+            "name": "Number type 'HOME' label",
+            "required": "no", 
+            "type": "string"
+        },
+        {
+            "default": "work", 
+            "description": "Label to override the default number type in VCF file : 'WORK'",
+            "key": "vcf_work_label", 
+            "name": "Number type 'WORK' label",
+            "required": "no", 
+            "type": "string"
         }
     ],
     "xpl_commands": {},   

@@ -94,6 +94,9 @@ class CallerIdManager(XplPlugin):
 
         ### get all config keys
         url_vcf_file = self.get_config('vcf_url')
+        vcf_cell_label = self.get_config('vcf_cell_label')
+        vcf_home_label = self.get_config('vcf_home_label')
+        vcf_work_label = self.get_config('vcf_work_label')
 
         ### First, try to load known phone numbers from a csv file
         contacts_file = os.path.join(self.get_data_files_directory(), CONTACTS_FILE)
@@ -112,7 +115,7 @@ class CallerIdManager(XplPlugin):
 
 
         ### Then, try to load known phone numbers from a vcf file
-        vcf_file = os.path.join(self.get_data_files_directory(), "test.vcf")
+        vcf_file = os.path.join(self.get_data_files_directory(), "downloaded.vcf")
         if URL_REGEXP.search(url_vcf_file):
             self.log.info("Valid url file configured for the VCF file : start downloading '{0}' as '{1}'".format(url_vcf_file, vcf_file))
             try:
@@ -131,19 +134,41 @@ class CallerIdManager(XplPlugin):
             with open(vcf_file, 'r') as vcf:
                 for line in vcf:
                     if line.startswith(BEGIN_VCARD):
-                        vcf_fn = ""
-                        vcf_num = []
+                        vcf_fn = None
+                        vcf_num = []   # list of dicts : [{"num" : ...,
+                                       #                   "num_type" : ...}, {...}]
                     elif line.startswith(FN):
                         vcf_fn = quopri.decodestring(line.split(":")[1].strip())
                     elif line.startswith(TEL):
+                        tel = line.split(":")[0].strip()
                         num = line.split(":")[1].strip()
+                        buffer = tel.split(";")
+                        if len(buffer) > 1:
+                             num_type = u"{0}".format(buffer[1])
+                        else:
+                             num_type = u""
                         for ind in INDICATORS:
                             if num.startswith(ind):
                                 num = num.replace(ind, INDICATORS[ind])
-                        vcf_num.append(num)
+                        vcf_num.append({"num" : num, "num_type" : num_type})
                     elif line.startswith(END_VCARD):
-                        for num in vcf_num:
-                            self.contacts[num] = unicode(vcf_fn, "utf-8")
+                        # if more than 1 number for a contact, add the num type
+                        if len(vcf_num) > 1:
+                            for num in vcf_num:
+                                print("x{0}x".format(num['num_type']))
+                                if num['num_type'] == 'CELL':
+                                    num_type = vcf_cell_label
+                                elif num['num_type'] == 'HOME':
+                                    num_type = vcf_home_label
+                                elif num['num_type'] == 'WORK':
+                                    num_type = vcf_work_label
+                                else:
+                                    num_type = num['num_type']
+                                self.contacts[num['num']] = u"{0} - {1}".format(unicode(vcf_fn, "utf-8"), num_type)
+                        # else, just take the name
+                        else:
+                            for num in vcf_num:   # dummy for : just 1 loop
+                                self.contacts[num['num']] = u"{0}".format(unicode(vcf_fn, "utf-8"))
         except IOError:
             self.log.error(u"No VCF file to open : {0}".format(vcf_file))
         except:
@@ -237,7 +262,7 @@ class CallerIdManager(XplPlugin):
             if status == True:
                 try:
                     with open(self.blacklist_file, 'ab') as fp_blacklist:
-                        fp_blacklist.write("\n{0};{1}\n".format("manual blacklisting", bl))
+                        fp_blacklist.write("\n{0};{1}".format("manual blacklisting", bl))
                 except:
                     reason = u"Error while completing blacklist file : {0}. Error is : {1}".format(self.blacklist_file, traceback.format_exc())
                     self.log.error(reason)

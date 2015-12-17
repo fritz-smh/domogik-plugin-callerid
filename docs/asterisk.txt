@@ -1,0 +1,14 @@
+.. _index:
+
+==============
+Asterisk usage
+==============
+
+You can use this plugin with your existing Asterisk installation.
+
+You need to :
+
+* Create a dummy device with **device = /ddev/null** as value for example.
+* Don't start the plugin! It would be useless.
+* Configure Asterisk to send a xPL message when an inbound call is received. See the :doc:`xPL message description </dev>` for more informations about this message.
+

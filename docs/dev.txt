@@ -2,31 +2,31 @@
 Development informations
 ========================
 
-Timeout on sensors
-==================
+The command part (blacklist a number) is only done over MQ.
 
-The timeout is set to 0 for all sensors : as the interval between 2 checks is a global parameter, we can't set a proper default timeout. If needed, the timeout should be set manually by the user for this plugin.
+The sensor part (calls detection) is only done over xPL to allow Asterisk usage.
 
 xPL messages
 ============
 
-xpl-stat
+xpl-trig
 --------
 
-The **sensor.basic** message is used: ::
+The **cid.basic** message is used and extended for our purpose.
 
-    xpl-stat
+    xpl-trig
     {
     ...
     }
-    sensor.basic
+    cid.basic
     {
-    type=input
-    device=<path>
-    current=<value : low or high>
+    calltype=inbound
+    phone=<phone number>
+    cln=<contact name>
+    blacklisted=<yes or no>
     }
 
-xpl-trig
+xpl-stat
 --------
 
 n/a
