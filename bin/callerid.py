@@ -293,7 +293,7 @@ class CallerIdManager(XplPlugin):
         msg.set_schema("cid.basic")
         msg.add_data({"calltype" : calltype})
         msg.add_data({"phone" : number})
-        if name != None:
+        if name != None and name != "":
             msg.add_data({"cln" : name})
         if blacklisted == True:
             msg.add_data({"blacklisted" : "yes"})
