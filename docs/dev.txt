@@ -12,7 +12,7 @@ xPL messages
 xpl-trig
 --------
 
-The **cid.basic** message is used and extended for our purpose.
+The **cid.basic** message is used and extended for our purpose. ::
 
     xpl-trig
     {

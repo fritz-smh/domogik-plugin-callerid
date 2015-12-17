@@ -7,7 +7,7 @@ Plugin callerid
 Purpose
 =======
 
-The callerid plugin detect when an incoming call happens with a home phone. It needs a modem to be used.
+The callerid plugin detects when an incoming call happens with a home phone. It needs a modem to be used.
 
 Dependencies
 ============
@@ -86,6 +86,7 @@ Blacklisted numbers
 -------------------
 
 The plugin is able to take the phone up and down for a list of numbers. For these numbers, your phone should ring only once.
+
 Create a line per phone number to blacklist. The format is : **reason of the blacklisting;phone number**. Example: ::
 
     I don't like this person;+33666666666
