@@ -1,0 +1,55 @@
+{
+    "history" : [
+                ],
+    "responses" : {},
+    "loop" : [
+                    { "description" : "RING",
+                      "action" : "data", 
+                      "data" : "RING"
+                    },
+                    { "description" : "NMBR",
+                      "action" : "data", 
+                      "data" : "NMBR = 0102030405"
+                    },
+                    { "description" : "wait",
+                      "action" : "wait", 
+                      "delay" : 5
+                    },
+                    { "description" : "RING",
+                      "action" : "data", 
+                      "data" : "RING"
+                    },
+                    { "description" : "NMBR",
+                      "action" : "data", 
+                      "data" : "NMBR = 0233445505"
+                    },
+                    { "description" : "wait",
+                      "action" : "wait", 
+                      "delay" : 5
+                    },
+                    { "description" : "RING",
+                      "action" : "data", 
+                      "data" : "RING"
+                    },
+                    { "description" : "NMBR",
+                      "action" : "data", 
+                      "data" : "NMBR = 0677335566"
+                    },
+                    { "description" : "wait",
+                      "action" : "wait", 
+                      "delay" : 5
+                    },
+                    { "description" : "RING",
+                      "action" : "data", 
+                      "data" : "RING"
+                    },
+                    { "description" : "NMBR",
+                      "action" : "data", 
+                      "data" : "NMBR = 0102030405"
+                    },
+                    { "description" : "wait",
+                      "action" : "wait", 
+                      "delay" : 5
+                    }
+              ]
+}
