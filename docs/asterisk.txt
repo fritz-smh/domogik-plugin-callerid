@@ -12,3 +12,19 @@ You need to :
 * Don't start the plugin! It would be useless.
 * Configure Asterisk to send a xPL message when an inbound call is received. See the :doc:`xPL message description </dev>` for more informations about this message.
 
+For exemple on two separatated machine one running asterisk that can ssh without password to one running domogik
+
+in your asterisk/extensions.conf in the inbound call:
+[from-pstn]
+exten => s,1,Gosub(prevenir,s,1)
+
+and add a new sub prevenir like this one:
+
+[prevenir]
+exten => s,1,Wait(0)
+same => n, System(nohup ssh domogik@domogikIP 'python /path/to/your/domogik/bin/send.py xpl-trig cid.basic "calltype=inbound,phone=${CALLERID(num)}"' &)
+same => n, Return
+
+
+
+
