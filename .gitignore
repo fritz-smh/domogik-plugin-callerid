@@ -2,3 +2,5 @@
 *.swp
 _build_doc
 data/downloaded.vcf
+data/blacklist.csv
+data/contacts.csv

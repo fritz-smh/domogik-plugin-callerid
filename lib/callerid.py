@@ -38,6 +38,7 @@ import serial as serial
 import domogik.tests.common.testserial as testserial
 import re
 import traceback
+import time
 
 
 
@@ -114,6 +115,7 @@ class CallerIdModem:
             self._ser.write("{0}\r\n".format(cid_command))
         except:
             error = "Error while opening modem device : {0} : {1}".format(used_device, str(traceback.format_exc()))
+            self._log.error(error)
             raise CallerIdModemException(error)
 
     def close(self):
@@ -154,7 +156,9 @@ class CallerIdModem:
                 blacklisted = True
                 reason = self.blacklist[num]
                 self._ser.write("ATA\r\n")
+                time.sleep(4)
                 self._ser.write("ATH\r\n")
+                self._log.info("Incoming call '{0}' rejected".format(num))
             return num, name, blacklisted
         else:
             return None, None, None
