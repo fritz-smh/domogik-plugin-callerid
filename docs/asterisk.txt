@@ -11,6 +11,7 @@ You need to :
 * Create a dummy device with **device = /dev/null** as value for example.
 * Don't start the plugin! It would be useless.
 * Configure Asterisk to send a xPL message when an inbound call is received. See the :doc:`xPL message description </dev>` for more informations about this message.
+* Full sample here: https://madomotique.wordpress.com/2012/02/01/notification-dappels-sip-asteriskdomogik/
 
 For exemple on two separatated machine one running asterisk that can ssh without password to one running domogik
 
