@@ -5,7 +5,7 @@ Changelog
 1.1
 ===
 
-* ...
+* Various minor improvments
 
 1.0
 ===

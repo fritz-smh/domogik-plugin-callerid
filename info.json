@@ -98,7 +98,7 @@
 	"name": {
 		"name": "Name of the caller",
                 "data_type": "DT_String",
-                "conversion": "",
+                "conversion": "from_None_to_DT_String",
                 "incremental": false,
                 "timeout": 0,
                 "history": {
