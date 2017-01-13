@@ -3,7 +3,7 @@
     "configuration": [
         {
             "default": "", 
-            "description": "Carddav VCF file url",
+            "description": "Carddav VCF file url or local file path",
             "key": "vcf_url", 
             "name": "VCF file",
             "required": "no", 
@@ -164,10 +164,10 @@
             }
         ],
         "description": "Get incoming calls numbers",
-        "domogik_min_version": "0.5.0", 
+        "domogik_min_version": "0.5.2", 
         "name": "callerid", 
         "type": "plugin", 
-        "version": "1.1"
+        "version": "1.2"
     }, 
     "json_version": 2
 }

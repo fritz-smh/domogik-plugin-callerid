@@ -16,7 +16,7 @@
 
     from domogik_packages.plugin_callerid.lib.rs_callerid import get_last_calls
     print("ARGS={0}".format(args))
-    result = get_last_calls(cfg_i18n, args, rs.log)
+    result = get_last_calls(cfg_i18n, args, rs.log, rs.devices)
     return result
 
 < object
