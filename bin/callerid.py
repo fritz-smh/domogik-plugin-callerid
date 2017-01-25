@@ -132,7 +132,7 @@ class CallerIdManager(XplPlugin):
             except:
                 self.log.error(u"Error while copying VCF file : '{0}' to '{1}'. Error is : {2}".format(url_vcf_file, vcf_file, traceback.format_exc()))
         else:
-            self.log.info("No url or path defined (or not valid path) for the VCF file '{0}'.".format(url_vcf_file))
+            self.log.info(u"No url or path defined (or not valid path) for the VCF file '{0}'.".format(url_vcf_file))
 
         # Notice that if the previous step failed, it can use the previous downloaded/copied file (in case the remote server is unavailable during startup)
         try:
@@ -196,7 +196,7 @@ class CallerIdManager(XplPlugin):
         self.ready()
 
     def open_modems(self):
-        self.log.info("(Re)starting the threads...")
+        self.log.info(u"(Re)starting the threads...")
         # restart all threads that listen to the modems
         if not hasattr(self, "stop_to_reload"):
             self.stop_to_reload = threading.Event()
@@ -243,7 +243,7 @@ class CallerIdManager(XplPlugin):
                     if len(a_blacklist) > 1:
                         self.blacklist[a_blacklist[1]] = a_blacklist[0]
                     else:
-                        self.log.warning("Blacklist file : invalid line : {0}".format(a_blacklist))
+                        self.log.warning(u"Blacklist file : invalid line : {0}".format(a_blacklist))
         except IOError:
             self.log.info(u"No blacklist file to open : {0}".format(self.blacklist_file))
 
@@ -278,7 +278,7 @@ class CallerIdManager(XplPlugin):
                 self.load_blacklist()
 
 
-            self.log.info("Reply to command")
+            self.log.info(u"Reply to command")
             reply_msg = MQMessage()
             reply_msg.set_action('client.cmd.result')
             reply_msg.add_data('status', status)
