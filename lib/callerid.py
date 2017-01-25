@@ -109,12 +109,17 @@ class CallerIdModem:
                 self._log.info(u"Try to open Modem : {0}".format(self.device))
                 self._ser = serial.Serial(self.device, baudrate = 19200, timeout = 1)
                 used_device = self.device
+            if used_device == None:
+                error = u"The device is not configured (current value == None)."
+                self._log.error(error)
+                raise CallerIdModemException(error)
+
             self._log.info("Modem opened")
             # Configure caller id mode
             self._log.info("Set modem to caller id mode : {0}".format(cid_command))
             self._ser.write("{0}\r\n".format(cid_command))
         except:
-            error = "Error while opening modem device : {0} : {1}".format(used_device, str(traceback.format_exc()))
+            error = u"Error while opening modem device : {0} : {1}".format(used_device, str(traceback.format_exc()))
             self._log.error(error)
             raise CallerIdModemException(error)
 
