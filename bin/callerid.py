@@ -47,6 +47,7 @@ import os
 import csv
 import quopri
 import re
+import shutil
 from urllib2 import urlopen
 try:
     # python3
@@ -117,15 +118,23 @@ class CallerIdManager(XplPlugin):
         ### Then, try to load known phone numbers from a vcf file
         vcf_file = os.path.join(self.get_data_files_directory(), "downloaded.vcf")
         if URL_REGEXP.search(url_vcf_file):
-            self.log.info("Valid url file configured for the VCF file : start downloading '{0}' as '{1}'".format(url_vcf_file, vcf_file))
+            self.log.info(u"Valid url file configured for the VCF file : start downloading '{0}' as '{1}'".format(url_vcf_file, vcf_file))
             try:
                 fp = urlopen(url_vcf_file)
                 with open(vcf_file, 'wb') as download:
                     download.write(fp.read())
             except:
                 self.log.error(u"Error while downloading VCF file : '{0}'. Error is : {1}".format(url_vcf_file, traceback.format_exc()))
+        elif os.path.isfile(url_vcf_file):
+            self.log.info(u"The VCF file configured is not an url but a local file : copying it from '{0}' to '{1}'".format(url_vcf_file, vcf_file))
+            try:
+                shutil.copyfile(url_vcf_file, vcf_file)
+            except:
+                self.log.error(u"Error while copying VCF file : '{0}' to '{1}'. Error is : {2}".format(url_vcf_file, vcf_file, traceback.format_exc()))
         else:
-            self.log.info("No url defined (or not valid url) for the VCF file.")
+            self.log.info(u"No url or path defined (or not valid path) for the VCF file '{0}'.".format(url_vcf_file))
+
+        # Notice that if the previous step failed, it can use the previous downloaded/copied file (in case the remote server is unavailable during startup)
         try:
             BEGIN_VCARD = "BEGIN:VCARD"
             FN = "FN"
@@ -155,7 +164,6 @@ class CallerIdManager(XplPlugin):
                         # if more than 1 number for a contact, add the num type
                         if len(vcf_num) > 1:
                             for num in vcf_num:
-                                print("x{0}x".format(num['num_type']))
                                 if num['num_type'] == 'CELL':
                                     num_type = vcf_cell_label
                                 elif num['num_type'] == 'HOME':
@@ -188,7 +196,7 @@ class CallerIdManager(XplPlugin):
         self.ready()
 
     def open_modems(self):
-        self.log.info("(Re)starting the threads...")
+        self.log.info(u"(Re)starting the threads...")
         # restart all threads that listen to the modems
         if not hasattr(self, "stop_to_reload"):
             self.stop_to_reload = threading.Event()
@@ -235,7 +243,7 @@ class CallerIdManager(XplPlugin):
                     if len(a_blacklist) > 1:
                         self.blacklist[a_blacklist[1]] = a_blacklist[0]
                     else:
-                        self.log.warning("Blacklist file : invalid line : {0}".format(a_blacklist))
+                        self.log.warning(u"Blacklist file : invalid line : {0}".format(a_blacklist))
         except IOError:
             self.log.info(u"No blacklist file to open : {0}".format(self.blacklist_file))
 
@@ -249,7 +257,7 @@ class CallerIdManager(XplPlugin):
         """
         XplPlugin.on_mdp_request(self, msg)
         if msg.get_action() == "client.cmd":
-            print(msg)
+            #print(msg)
             reason = None
             status = True
             data = msg.get_data()
@@ -270,7 +278,7 @@ class CallerIdManager(XplPlugin):
                 self.load_blacklist()
 
 
-            self.log.info("Reply to command")
+            self.log.info(u"Reply to command")
             reply_msg = MQMessage()
             reply_msg.set_action('client.cmd.result')
             reply_msg.add_data('status', status)
@@ -295,6 +303,8 @@ class CallerIdManager(XplPlugin):
         msg.add_data({"phone" : number})
         if name != None and name != "":
             msg.add_data({"cln" : name})
+        else:
+            msg.add_data({"cln" : "None"})   # as we can't set an empty value in xpl, we put None. The conversion will change "None" to ""
         if blacklisted == True:
             msg.add_data({"blacklisted" : "yes"})
         elif blacklisted == False:

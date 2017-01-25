@@ -38,7 +38,7 @@ import datetime
 import traceback
 import locale
 
-def get_last_calls(cfg_i18n, args, log):
+def get_last_calls(cfg_i18n, args, log, devices):
     """ Function for the brain part
     """
 
@@ -66,16 +66,16 @@ def get_last_calls(cfg_i18n, args, log):
 
     # get the last call
     if period == None:
-        num, date1 = get_sensor_value_and_date(log, LOCALE, "DT_String", device_name, "callerid")
-        name, date2 = get_sensor_value_and_date(log, LOCALE, "DT_String", device_name, "name")
-        blacklisted, date3 = get_sensor_value_and_date(log, LOCALE, "DT_Bool", device_name, "blacklisted")
+        num, date1 = get_sensor_value_and_date(log, devices, LOCALE, "DT_String", device_name, "callerid")
+        name, date2 = get_sensor_value_and_date(log, devices, LOCALE, "DT_String", device_name, "name")
+        blacklisted, date3 = get_sensor_value_and_date(log, devices, LOCALE, "DT_Bool", device_name, "blacklisted")
     
         # no history
         if num == None:
             return NO_HISTORY
     
         # date1 != date2 means that the last name is not related to the last number
-        if name == None or date2 == None or abs(date1 - date2) > 2:
+        if name == "" or name == None or date2 == None or abs(date1 - date2) > 2:
             who = num
         else:
             who = name
@@ -89,16 +89,16 @@ def get_last_calls(cfg_i18n, args, log):
             locale.setlocale(locale.LC_ALL, LOCALE)
         except:
             return ERROR_LOCALE
-        time = ucode(time.strftime(DISPLAY_FORMAT.encode('utf-8')).decode('utf-8'))
-    
+        #time = ucode(time.strftime(DISPLAY_FORMAT.encode('utf-8')).decode('utf-8'))
+        time = time.strftime(DISPLAY_FORMAT.encode('utf-8')).decode('utf-8')
         return u"{0} {1}".format(TXT_LAST_CALL_IS.format(who, time), txt_blacklisted)
 
     # get the calls of a period
     else:
         if period == "today":
             since = get_midnight_timestamp()
-            data_num = get_sensor_last_values_since(log, LOCALE, "DT_String", device_name, "callerid", since = since)
-            data_name = get_sensor_last_values_since(log, LOCALE, "DT_String", device_name, "name", since = since)
+            data_num = get_sensor_last_values_since(log, devices, LOCALE, "DT_String", device_name, "callerid", since = since)
+            data_name = get_sensor_last_values_since(log, devices, LOCALE, "DT_String", device_name, "name", since = since)
             idx = 0
             txt = u"{0}".format(TXT_TODAY_CALLS_ARE)
             for elt in data_num:

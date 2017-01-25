@@ -31,12 +31,12 @@ You just need to copy the choosen sample file in the folder **/etc/udev/rules.d/
 Plugin configuration
 ====================
 
-You can configure the url of an online **CardDAV** file (also called VCF file). These files are contact list files and can be provided by personnal or profesionnal cloud solutions.
+You can configure the url of an online **CardDAV** file or the path on your server of a **CardDAV** file. (also called VCF file). These files are contact list files and can be provided by personnal or profesionnal cloud solutions. You can also get this kind of files by doing an export of your smartphone contacts in a file.
 
 ===================== =========================== ======================================================================
 Key                   Type                        Description
 ===================== =========================== ======================================================================
-vcf_url               url                         The url of a vcf file.
+vcf_url               url                         The url of a vcf file or the local path of the file on the server.
 vcf_cell_label        string                      Label to override the default number type in the VCF file : 'CELL'
 vcf_home_label        string                      Label to override the default number type in the VCF file : 'HOME'
 vcf_work_label        string                      Label to override the default number type in the VCF file : 'WORK'

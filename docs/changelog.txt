@@ -2,6 +2,18 @@
 Changelog
 =========
 
+1.2
+===
+
+* WARNING : Domogik 0.5.2 at least is needed.
+* Butler : add compatibility for Domogik 0.5.2
+* Allow the plugin to load a local VCF file (only url in the previous release)
+
+1.1
+===
+
+* Various minor improvments
+
 1.0
 ===
 
