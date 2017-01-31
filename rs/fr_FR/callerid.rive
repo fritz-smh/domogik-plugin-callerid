@@ -33,7 +33,7 @@
 
 
 
-// device par défaut (souvent pour ce plugin il n'y en aura qu'un)
+/////////// device par défaut (souvent pour ce plugin il n'y en aura qu'un)
 + shortcut appel
 - <call>get_last_calls None</call>
 
@@ -46,20 +46,27 @@
 + qui vient d appeler
 @ shortcut appel
 
+// pour usage avec peuxTu
++ le dernier appel
+@ shortcut appel
 
-// appels du jour
+
+/////////// appels du jour
 + shortcut appels aujourd hui
 - <call>get_last_calls None__SEP__today</call>
 
-+ qui a appele aujourd hui
++ qui a appele (aujourd hui|dans la journee|ce jour)
 @ shortcut appels aujourd hui
 
-+ @quel sont les appels du jour
++ @quel sont les appels (du jour|de la journee)
+@ shortcut appels aujourd hui
+
+// pour usage avec peuxTu
++ les appels (du jour|aujourd hui|d aujourd hui|de la journee)
 @ shortcut appels aujourd hui
 
 
-
-// device spécifique (dès fois que...)
+/////////// device spécifique (dès fois que...)
 + shortcut appel *
 - <call>get_last_calls <star></call>
 
@@ -72,16 +79,23 @@
 + qui vient d appeler sur [@pronom] *
 @ shortcut appel <star>
 
+// pour usage avec peuxTu
++ le dernier appel sur [@pronom] *
+@ shortcut appel <star>
 
-// appels du jour
+/////////// appels du jour
 + shortcut appels aujourd hui *
 - <call>get_last_calls <star>__SEP__today</call>
 
-+ qui a appele aujourd hui sur [@pronom] *
-@ shortcut appels aujourd hui
++ qui a appele (aujourd hui|dans la journee|ce jour) sur [@pronom] *
+@ shortcut appels aujourd hui <star2>
 
-+ @quel sont les appels du jour sur [@pronom] *
-@ shortcut appels aujourd hui
++ @quel sont les appels (du jour|de la journee) sur [@pronom] *
+@ shortcut appels aujourd hui <star2>
+
+// pour usage avec peuxTu
++ les appels (du jour|aujourd hui|d aujourd hui|de la journee) sur [@pronom] *
+@ shortcut appels aujourd hui <star2>
 
 
 
