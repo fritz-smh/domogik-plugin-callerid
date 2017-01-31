@@ -304,7 +304,8 @@ class CallerIdManager(XplPlugin):
         if name != None and name != "":
             msg.add_data({"cln" : name})
         else:
-            msg.add_data({"cln" : "None"})   # as we can't set an empty value in xpl, we put None. The conversion will change "None" to ""
+            #msg.add_data({"cln" : "None"})   # as we can't set an empty value in xpl, we put None. The conversion will change "None" to ""
+            msg.add_data({"cln" : number})   # to allow more simple scenario and butler usage, the name is replaced by the number if there is no name
         if blacklisted == True:
             msg.add_data({"blacklisted" : "yes"})
         elif blacklisted == False:

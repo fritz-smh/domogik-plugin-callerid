@@ -2,6 +2,12 @@
 Changelog
 =========
 
+1.3
+===
+
+* If a caller name is unknown, the value will now be set to the phone number instead of an empty value
+* Butler : improvments in sentences (fr_FR)
+
 1.2
 ===
 
